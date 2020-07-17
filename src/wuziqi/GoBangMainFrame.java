@@ -44,7 +44,7 @@ public class GoBangMainFrame extends JFrame {
 		
 		GoBangBoardPanel goBangBoardPanel = new GoBangBoardPanel();
 		contentPane.add(goBangBoardPanel);
-		
+
 		GoBangMenuPanel goBangMenuPanel = new GoBangMenuPanel();
 		contentPane.add(goBangMenuPanel);
 	}

@@ -22,11 +22,12 @@ public class GoBangBoardPanel extends JPanel {
 	public GoBangBoardPanel() {
 		addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				curCellAimed = GetPositionCell(e.getPoint());
-				if (CellValid(curCellAimed) && GoBangManager.HasChess(curCellAimed) == false) {
-					var chess = new Chess(curCellAimed, GoBangManager.putStack.size() % 2 == 0 ? Player.P1 : Player.P2);
-					chess.Put();
+			public void mousePressed(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					curCellAimed = GetPositionCell(e.getPoint());
+					if (GoBangManager.CellValid(curCellAimed) && GoBangManager.HasChess(curCellAimed) == false && GoBangManager.gameOver == false) {
+						GoBangManager.PutChess(curCellAimed);
+					}
 				}
 			}
 		});
@@ -34,7 +35,7 @@ public class GoBangBoardPanel extends JPanel {
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				curCellAimed = GetPositionCell(e.getPoint());
-				if (CellValid(curCellAimed)) {
+				if (GoBangManager.CellValid(curCellAimed)) {
 					repaint();
 				}
 			}
@@ -47,17 +48,17 @@ public class GoBangBoardPanel extends JPanel {
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
+
 		// draw board
 		DrawBoard(g);
-		
+
 		// draw aiming box
-		if (CellValid(curCellAimed)) {
+		if (GoBangManager.CellValid(curCellAimed)) {
 			DrawAimingBox(g, curCellAimed.x, curCellAimed.y);
 		}
-		
+
 		// draw chess
-		for(var chess : GoBangManager.putStack) {
+		for (var chess : GoBangManager.putStack) {
 			chess.Draw(g);
 		}
 	}
@@ -82,24 +83,18 @@ public class GoBangBoardPanel extends JPanel {
 
 		return new Point(startPoint.x + gap.width * x, startPoint.y + gap.height * y);
 	}
-	
-	public Point GetPositionCell(Point pos)
-	{
+
+	public Point GetPositionCell(Point pos) {
 		var rect = GetBoardRect();
 		if (rect.contains(pos)) {
 			var gap = GetCellSize();
-			var relativeLoc = new Point(pos.x - rect.x + gap.width / 2,
-					pos.y - rect.y + gap.height / 2);
+			var relativeLoc = new Point(pos.x - rect.x + gap.width / 2, pos.y - rect.y + gap.height / 2);
 			return new Point(relativeLoc.x / gap.width, relativeLoc.y / gap.height);
 		} else {
 			return new Point(-1, -1);
 		}
 	}
-	
-	public boolean CellValid(Point cell)
-	{
-		return cell.x >= 0 && cell.y >= 0;
-	}
+
 
 	void DrawBoard(Graphics g) {
 		final int lineCount = GoBangManager.LineCount;
