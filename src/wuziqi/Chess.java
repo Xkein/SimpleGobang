@@ -4,11 +4,18 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 
-public class Chess {
+public class Chess implements Comparable<Chess> {
 	static final int radius = 10;
 	Point location;
 	Player owner;
 	int index;
+
+	int offense;
+	int defense;
+
+	public int GetSum() {
+		return offense + defense;
+	}
 
 	public Chess(Point loc, Player player) {
 		location = loc;
@@ -46,5 +53,10 @@ public class Chess {
 		}
 
 		g.setColor(oldColor);
+	}
+
+	@Override
+	public int compareTo(Chess o) {
+		return Integer.compare(GetSum(), o.GetSum());
 	}
 }

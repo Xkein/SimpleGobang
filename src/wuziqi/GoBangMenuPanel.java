@@ -145,7 +145,7 @@ public class GoBangMenuPanel extends JPanel {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				GoBangManager.StartNewGame(rdbtnPvp.isSelected() ? Mode.PVP : Mode.PVE,
-						rdbtnEF.isSelected() ? AI.EstimateFunction : AI.EstimateFunction_Tree,
+						rdbtnEF.isSelected() ? AI.Algorithm.EstimateFunction : AI.Algorithm.EstimateFunction_Tree,
 						rdbtnWeFirst.isSelected(), (int) comboBoxDepth.getSelectedItem(),
 						(int) comboBoxNodeCount.getSelectedItem());
 			}
