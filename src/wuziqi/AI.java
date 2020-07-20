@@ -19,6 +19,8 @@ public class AI {
 	int treeDepth;
 	int treeNodeCount;
 
+	Chess chessBeansForTree;
+
 	private static int[][] position;
 
 	AI() {
@@ -47,8 +49,10 @@ public class AI {
 			chess = getSortList(player, GoBangManager.chesses).get(0);
 			break;
 		case EstimateFunction_Tree:
-			chess = GetScoreByTree(0, player, GoBangManager.chesses);
-			chess.owner = player;
+			// chess = GetScoreByTree(0, player, GoBangManager.chesses);
+			GetScoreByTree(0, player, GoBangManager.chesses, Integer.MIN_VALUE, Integer.MAX_VALUE);
+			chess = chessBeansForTree;
+			// chess.owner = player;
 			break;
 		}
 
@@ -171,7 +175,19 @@ public class AI {
 		return score;
 	}
 
-	protected Chess GetScoreByTree(int depth, Player player, Chess[][] chesses) {
+	/*
+	 * protected Chess GetScoreByTree(int depth, Player player, Chess[][] chesses) {
+	 * Chess[][] tmp = new Chess[chesses.length][]; for (int i = 0; i < tmp.length;
+	 * i++) { tmp[i] = chesses[i].clone();
+	 * 
+	 * } List<Chess> orderList = getSortList(player, tmp); if (depth == treeDepth) {
+	 * return orderList.get(0); // 达到搜索指定深度，结束。返回当前步骤中。获取到的估值最高的点。 } for (int i = 0;
+	 * i < orderList.size(); i++) { var chess = orderList.get(i); if (chess.GetSum()
+	 * > ModelType.ALIVE_4.score) { return chess; } else { //
+	 * 这个步骤是模拟下棋。不能再真正的棋盘上进行落子 tmp[chess.location.x][chess.location.y] = chess;
+	 * return GetScoreByTree(depth + 1, player.GetEnemy(), tmp); } } return null; }
+	 */
+	protected int GetScoreByTree(int depth, Player player, Chess[][] chesses, int alpha, int beta) {
 		Chess[][] tmp = new Chess[chesses.length][];
 		for (int i = 0; i < tmp.length; i++) {
 			tmp[i] = chesses[i].clone();
@@ -179,19 +195,47 @@ public class AI {
 		}
 		List<Chess> orderList = getSortList(player, tmp);
 		if (depth == treeDepth) {
-			return orderList.get(0); // 达到搜索指定深度，结束。返回当前步骤中。获取到的估值最高的点。
+			return orderList.get(0).GetSum(); // 达到搜索指定深度，结束。返回当前步骤中。获取到的估值最高的点。
 		}
-		for (int i = 0; i < orderList.size(); i++) {
-			var chess = orderList.get(i);
+		// 遍历当前棋盘上所有空余的位置（遍历getSortList）
+		for (int i = 0; i < treeNodeCount; i++) {
+			Chess chess = orderList.get(0);
+			int score;
 			if (chess.GetSum() > ModelType.ALIVE_4.score) {
-				return chess;
+				// 找到目标
+				score = chess.GetSum();
 			} else {
 				// 这个步骤是模拟下棋。不能再真正的棋盘上进行落子
 				tmp[chess.location.x][chess.location.y] = chess;
-				return GetScoreByTree(depth + 1, player.GetEnemy(), tmp);
+				score = GetScoreByTree(depth + 1, player.GetEnemy(), tmp, alpha, beta);
+			}
+			if (depth % 2 == 0) {
+				// 自己，找最大值
+				if (score > alpha) {
+					alpha = score;
+					if (depth == 0) {
+						// 结果
+						chessBeansForTree = chess;
+						// System.out.println(chessBeansForTree);
+					}
+				}
+				if (alpha >= beta) {
+					// 剪枝
+					score = alpha;
+					return score;
+				}
+			} else {
+				if (score < beta) {
+					beta = score;
+				}
+				if (alpha >= beta) {
+					// 剪枝
+					score = beta;
+					return score;
+				}
 			}
 		}
-		return null;
+		return depth % 2 == 0 ? alpha : beta;
 	}
 
 }
