@@ -187,6 +187,7 @@ public class AI {
 	 * 这个步骤是模拟下棋。不能再真正的棋盘上进行落子 tmp[chess.location.x][chess.location.y] = chess;
 	 * return GetScoreByTree(depth + 1, player.GetEnemy(), tmp); } } return null; }
 	 */
+	
 	protected int GetScoreByTree(int depth, Player player, Chess[][] chesses, int alpha, int beta) {
 		Chess[][] tmp = new Chess[chesses.length][];
 		for (int i = 0; i < tmp.length; i++) {
